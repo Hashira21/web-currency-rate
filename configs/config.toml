@@ -1,0 +1,26 @@
+[Application]
+    Name = "currency-rates"
+    Version = "1.0.0"
+    Port = ":8080"
+    HttpTimeout = 10000000000
+
+[FrankfurterClient]
+    Host = "https://api.frankfurter.app"
+    PathPrefix = ""
+    [FrankfurterClient.Endpoints.GetRate]
+        Path = "/latest"
+        Method = "GET"
+    [FrankfurterClient.Endpoints.GetCurrencyList]
+        Path = "/currencies"
+        Method = "GET"
+
+[Postgres]
+    Host = "db"
+    Port = 5432
+    Database = "plata"
+    User = "DB_POSTGRES_USER"
+    Password = "DB_POSTGRES_PASSWORD"
+
+[SyncRates]
+    ConfigString = "@every 15s"
+

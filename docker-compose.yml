@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  currency-rate:
+    build: ./
+    command:
+      - ./app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_POSTGRES_USER=postgres
+      - DB_POSTGRES_PASSWORD=qwerty
+    entrypoint: ./wait-for-postgres.sh db:5432
+
+  db:
+    image: postgres:16.2-alpine
+    restart: always
+    ports:
+      - '5444:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=plata
+    volumes:
+      - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
