@@ -1,11 +1,12 @@
 version: '3.8'
 services:
   frontend:
-    build:
-      context: .  # корневая директория проекта
-      dockerfile: Dockerfile  # если Dockerfile в корне
+    image: nginx:alpine
     ports:
       - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./frontend/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - currency-rate
     networks:
@@ -39,6 +40,9 @@ services:
       - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
     networks:
       - app-network
+
+volumes:
+  postgres_data:
 
 networks:
   app-network:
