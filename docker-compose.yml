@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  frontend:
+    build: ./frontend  # предполагается что фронтенд в отдельной директории
+    ports:
+      - "80:80"
+    depends_on:
+      - currency-rate
+    networks:
+      - app-network
+
   currency-rate:
     build: ./
     command:
@@ -12,6 +21,8 @@ services:
       - DB_POSTGRES_USER=postgres
       - DB_POSTGRES_PASSWORD=qwerty
     entrypoint: ./wait-for-postgres.sh db:5432
+    networks:
+      - app-network
 
   db:
     image: postgres:16.2-alpine
@@ -24,3 +35,9 @@ services:
       - POSTGRES_DB=plata
     volumes:
       - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

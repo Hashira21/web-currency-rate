@@ -26,3 +26,14 @@ RUN apk add postgresql-client
 RUN chmod +x wait-for-postgres.sh
 
 CMD ["/app"]
+
+# Фронтенд (новый Dockerfile в директории frontend/Dockerfile)
+# frontend/Dockerfile
+FROM nginx:alpine
+
+COPY ./css /usr/share/nginx/html/css
+COPY ./index.html /usr/share/nginx/html
+COPY ./script.js /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
