@@ -31,9 +31,10 @@ CMD ["/app"]
 # frontend/Dockerfile
 FROM nginx:alpine
 
-COPY ./css /usr/share/nginx/html/css
-COPY ./index.html /usr/share/nginx/html
-COPY ./script.js /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ./index.html /usr/share/nginx/html/
+COPY ./css/ /usr/share/nginx/html/css/
+COPY ./script.js /usr/share/nginx/html/
+# Копируем конфиг Nginx
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80

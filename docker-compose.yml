@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   frontend:
-    build: ./frontend  # предполагается что фронтенд в отдельной директории
+    build: ./frontend
     ports:
       - "80:80"
     depends_on:
