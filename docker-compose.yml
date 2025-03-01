@@ -1,7 +1,9 @@
 version: '3.8'
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: .  # корневая директория проекта
+      dockerfile: Dockerfile  # если Dockerfile в корне
     ports:
       - "80:80"
     depends_on:
