@@ -70,23 +70,22 @@ async function addRate(currencyPair) {
 // Удаление курса по валютной паре
 async function deleteRate(currency, base) {
     if (!currency || !base) {
-        console.error("Ошибка: Валютная пара не передана!");
+        showNotification("Ошибка: Не указана валютная пара", true);
         return;
     }
-
+    
     try {
-        const response = await fetch(`http://localhost:8080/api/v1/delete/${currency}/${base}`, {
+        const response = await fetch(`${API_URL}/delete/${currency}/${base}`, {
             method: "DELETE",
         });
 
-        if (!response.ok) {
-            throw new Error("Ошибка при удалении курса");
-        }
-
-        console.log(`Курс ${currency}/${base} удалён`);
-        loadRates(); // Перезагружаем таблицу после удаления
+        if (!response.ok) throw new Error("Ошибка при удалении");
+        
+        showNotification(`Курс ${currency}/${base} удалён`);
+        loadRates();
     } catch (error) {
-        console.error("Ошибка удаления курса:", error);
+        console.error("Ошибка удаления:", error);
+        showNotification(error.message, true);
     }
 }
 
@@ -185,11 +184,16 @@ async function loadRates() {
 // Показ уведомлений
 function showNotification(message, isError = false) {
     const notification = document.getElementById("notification");
-    notification.innerText = message;
-    notification.style.backgroundColor = isError ? "red" : "green";
-    notification.style.display = "block";
+    notification.textContent = message;
+    
+    // Сбрасываем анимацию
+    notification.classList.remove('show', 'error');
+    void notification.offsetWidth; // Триггер перерисовки
+    
+    notification.classList.add('show');
+    if(isError) notification.classList.add('error');
 
     setTimeout(() => {
-        notification.style.display = "none";
+        notification.classList.remove('show');
     }, 3000);
 }

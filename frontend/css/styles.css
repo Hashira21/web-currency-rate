@@ -211,10 +211,11 @@ tr:hover td {
   padding: 1rem 2rem;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  transition: right 0.3s ease;
+  transition: right 0.3s ease-in-out;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  z-index: 2000;
 }
 
 #notification.show {
@@ -223,6 +224,23 @@ tr:hover td {
 
 #notification.error {
   background: var(--danger);
+}
+
+#notification::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+#notification:not(.error)::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+}
+
+#notification.error::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
 }
 
 @media (max-width: 768px) {
