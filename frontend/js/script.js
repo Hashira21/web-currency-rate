@@ -4,7 +4,7 @@ let currentBase = "";
 
 document.addEventListener("DOMContentLoaded", () => {
     loadRates();
-    setInterval(loadRates, 50000);
+    setInterval(loadRates, 10000);
 
     document.getElementById("addRate").addEventListener("click", async () => {
         const currencyPair = document.getElementById("currencyPair").value.trim();
@@ -135,7 +135,7 @@ async function updateRate(currency, base, newRate) {
 // Загрузка курсов в таблицу
 async function loadRates() {
     try {
-        const response = await fetch("http://localhost:8080/api/v1/all-last");
+        const response = await fetch(`${API_URL}/all-last`);
         if (!response.ok) {
             throw new Error("Ошибка загрузки данных");
         }
