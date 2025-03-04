@@ -105,7 +105,7 @@ func (svc *service) UpdateRate(ctx context.Context, currency, base string, rate 
 
 // Метод для автоматического обновления курсов
 func (svc *service) AutoUpdateRates() {
-	ticker := time.NewTicker(1 * time.Minute) // Обновление раз в день
+	ticker := time.NewTicker(6 * time.Hour) // Обновление раз в 6 часов
 	defer ticker.Stop()
 
 	for {
