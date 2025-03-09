@@ -13,4 +13,5 @@ type Service interface {
 	GetAllLastRates(ctx context.Context) ([]models.CurrencyRateLast, error)
 	DeleteByPair(ctx context.Context, currency, base string) error
 	UpdateRate(ctx context.Context, currency, base string, rate float64) error
+	GetHistory(ctx context.Context, currency, base, period string) ([]models.CurrencyRateWithDt, error)
 }

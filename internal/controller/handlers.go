@@ -225,3 +225,41 @@ func (ctr *controller) UpdateCurrencyRate(w http.ResponseWriter, r *http.Request
 
 	response.Write(w, []byte(`{"message": "Курс обновлён успешно"}`))
 }
+
+// GetHistory godoc
+// @Summary      Получить историю курса
+// @Description  Возвращает исторические данные курса за указанный период
+// @Tags         Methods
+// @Param        currency  query  string  true  "Валюта (например: EUR)"
+// @Param        base      query  string  true  "Базовая валюта (например: USD)"
+// @Param        period    query  string  true  "Период (15m,30m,1h,5h,1d,1w)"
+// @Success      200       {array} models.CurrencyRateWithDt
+// @Router       /history  [get]
+func (ctr *controller) GetHistory(w http.ResponseWriter, r *http.Request) {
+	currency := r.URL.Query().Get("currency")
+	base := r.URL.Query().Get("base")
+	period := r.URL.Query().Get("period")
+
+	// Валидация ISO кодов
+	if invalidIso, isInvalid := ctr.validateIsoCode(&currency, &base); !isInvalid {
+		response.WriteError(w, http.StatusBadRequest, fmt.Errorf("некорректный код валюты: %s", invalidIso))
+		return
+	}
+
+	// Получение данных
+	history, err := ctr.service.GetHistory(r.Context(), currency, base, period)
+	if err != nil {
+		ctr.logger.Error().Msg(err.Error())
+		response.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Отправка ответа
+	respBody, err := json.Marshal(history)
+	if err != nil {
+		ctr.logger.Error().Msg(err.Error())
+		response.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	response.Write(w, respBody)
+}

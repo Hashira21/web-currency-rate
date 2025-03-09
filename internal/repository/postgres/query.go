@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/Hashira21/currency-rate/internal/models"
 	"github.com/jackc/pgx/v5"
@@ -277,4 +278,45 @@ func (db *database) GetPreviousRate(ctx context.Context, currency, base string) 
 	}
 
 	return result, nil
+}
+
+func (db *database) GetHistoryRates(ctx context.Context, currency, base string, duration time.Duration) ([]models.CurrencyRateWithDt, error) {
+	childCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	rows, err := db.conn.Query(childCtx,
+		`SELECT id, currency, base, rate, date 
+         FROM plata_currency_rates.rates 
+         WHERE currency = $1 AND base = $2 
+         AND date >= NOW() - $3::INTERVAL 
+         ORDER BY date ASC`, // ASC для правильного порядка на графике
+		currency, base, fmt.Sprintf("%d minutes", int(duration.Minutes())))
+
+	if err != nil {
+		db.logger.Error().Msg(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rates []models.CurrencyRateWithDt
+	for rows.Next() {
+		var rateDto models.CurrencyRateWithDtDto
+		if err := rows.Scan(
+			&rateDto.Id,
+			&rateDto.Currency,
+			&rateDto.Base,
+			&rateDto.Rate,
+			&rateDto.UpdateDt,
+		); err != nil {
+			return nil, err
+		}
+
+		rate, err := rateDto.FromDto()
+		if err != nil {
+			return nil, err
+		}
+		rates = append(rates, rate)
+	}
+
+	return rates, nil
 }

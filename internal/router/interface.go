@@ -9,4 +9,5 @@ type Controller interface {
 	GetAllLastRates(w http.ResponseWriter, r *http.Request)
 	DeleteByPair(w http.ResponseWriter, r *http.Request)
 	UpdateCurrencyRate(w http.ResponseWriter, r *http.Request)
+	GetHistory(w http.ResponseWriter, r *http.Request)
 }

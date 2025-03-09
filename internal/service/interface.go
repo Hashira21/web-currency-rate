@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/Hashira21/currency-rate/internal/models"
 )
@@ -19,4 +20,5 @@ type Postgres interface {
 	GetAllLastRates(ctx context.Context) ([]models.CurrencyRateLast, error)
 	DeleteByPair(ctx context.Context, currency, base string) error
 	UpdateRate(ctx context.Context, currency, base string, rate float64) error
+	GetHistoryRates(ctx context.Context, currency, base string, duration time.Duration) ([]models.CurrencyRateWithDt, error)
 }

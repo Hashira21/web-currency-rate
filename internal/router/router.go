@@ -27,6 +27,7 @@ func setRoutes(router *mux.Router, c Controller) {
 		{method: http.MethodGet, path: "/last", name: "GetLastRate", handler: c.GetLastRate},
 		{method: http.MethodGet, path: "/all-last", name: "GetAllLastRates", handler: c.GetAllLastRates},
 		{method: http.MethodPatch, path: "/update", name: "UpdateCurrencyRate", handler: c.UpdateCurrencyRate},
+		{method: http.MethodGet, path: "/history", name: "GetHistory", handler: c.GetHistory},
 	}
 
 	api := router.PathPrefix(apiV1Prefix).Subrouter()

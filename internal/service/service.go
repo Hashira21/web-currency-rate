@@ -105,7 +105,7 @@ func (svc *service) UpdateRate(ctx context.Context, currency, base string, rate 
 
 // Метод для автоматического обновления курсов
 func (svc *service) AutoUpdateRates() {
-	ticker := time.NewTicker(6 * time.Hour) // Обновление раз в 6 часов
+	ticker := time.NewTicker(30 * time.Second) // Обновление раз минуту
 	defer ticker.Stop()
 
 	for {
@@ -163,4 +163,33 @@ func (svc *service) updateAllRates() error {
 	}
 
 	return nil
+}
+
+func (svc *service) GetHistory(ctx context.Context, currency, base, period string) ([]models.CurrencyRateWithDt, error) {
+	duration, err := parseDuration(period)
+	if err != nil {
+		return nil, err
+	}
+
+	return svc.db.GetHistoryRates(ctx, currency, base, duration)
+}
+
+// Вспомогательная функция для конвертации периода
+func parseDuration(period string) (time.Duration, error) {
+	switch period {
+	case "15m":
+		return 15 * time.Minute, nil
+	case "30m":
+		return 30 * time.Minute, nil
+	case "1h":
+		return 1 * time.Hour, nil
+	case "5h":
+		return 5 * time.Hour, nil
+	case "1d":
+		return 24 * time.Hour, nil
+	case "1w":
+		return 168 * time.Hour, nil
+	default:
+		return 0, fmt.Errorf("неподдерживаемый период: %s", period)
+	}
 }

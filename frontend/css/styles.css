@@ -299,3 +299,35 @@ tr:hover td {
 .trash-icon:hover {
   color: #d0345c;
 }
+
+/* Модальное окно графика */
+#chartModal .modal-content {
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.chart-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.chart-controls button {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background: var(--light);
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chart-controls button.active {
+  background: var(--primary);
+  color: white;
+}
+
+#historyChart {
+  width: 100% !important;
+  height: 400px !important;
+}

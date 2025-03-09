@@ -2,9 +2,13 @@ const API_URL = "http://localhost:8080/api/v1";
 let currentCurrency = "";
 let currentBase = "";
 
+let chartInstance = null;
+let currentChartCurrency = '';
+let currentChartBase = '';
+
 document.addEventListener("DOMContentLoaded", () => {
     loadRates();
-    setInterval(loadRates, 10000);
+    setInterval(loadRates, 5000);
 
     document.getElementById("addRate").addEventListener("click", async () => {
         const currencyPair = document.getElementById("currencyPair").value.trim();
@@ -169,6 +173,11 @@ async function loadRates() {
                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
                     </svg>
                 </button>
+                <button class="icon-button" onclick="showChart('${rate.currency}', '${rate.base}')">
+                    <svg class="icon chart-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
+                    </svg>
+                </button>
             </td>
         `;
             ratesTable.appendChild(row);
@@ -196,4 +205,65 @@ function showNotification(message, isError = false) {
     setTimeout(() => {
         notification.classList.remove('show');
     }, 3000);
+}
+
+// Функция открытия модалки графика
+function showChart(currency, base) {
+    currentChartCurrency = currency;
+    currentChartBase = base;
+    document.getElementById('chartTitle').textContent = `${currency}/${base}`;
+    document.getElementById('chartModal').classList.add('show');
+    loadChartData('1h'); // Загрузка данных по умолчанию
+}
+
+// Функция закрытия модалки
+function closeChartModal() {
+    document.getElementById('chartModal').classList.remove('show');
+    if(chartInstance) {
+        chartInstance.destroy(); // Уничтожаем предыдущий график
+    }
+}
+async function loadChartData(period) {
+    try {
+        const response = await fetch(
+            `${API_URL}/history?currency=${currentChartCurrency}&base=${currentChartBase}&period=${period}`
+        );
+        const data = await response.json();
+
+        // Удаляем старый график
+        if(chartInstance) chartInstance.destroy();
+
+        // Создаем новый график
+        const ctx = document.getElementById('historyChart');
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(item => 
+                    new Date(item.updateDt).toLocaleTimeString('ru-RU', { 
+                        hour: '2-digit', 
+                        minute: '2-digit'
+                    })
+                ),
+                datasets: [{
+                    label: `Курс ${currentChartCurrency}/${currentChartBase}`,
+                    data: data.map(item => item.rate),
+                    borderColor: '#4361ee',
+                    tension: 0.1,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+    } catch (error) {
+        showNotification('Ошибка загрузки данных графика', true);
+        console.error('Chart error:', error);
+    }
 }

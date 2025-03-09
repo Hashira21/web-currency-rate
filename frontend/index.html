@@ -79,6 +79,34 @@
             </div>
         </div>
 
+        <!-- Добавьте этот код после существующего модального окна редактирования -->
+        <div id="chartModal" class="modal">
+            <div class="modal-content">
+                <h2>История курса <span id="chartTitle"></span></h2>
+                
+                <!-- Кнопки выбора периода -->
+                <div class="chart-controls">
+                    <button onclick="loadChartData('15m')" class="time-btn">15 мин</button>
+                    <button onclick="loadChartData('30m')" class="time-btn">30 мин</button>
+                    <button onclick="loadChartData('1h')" class="time-btn">1 час</button>
+                    <button onclick="loadChartData('5h')" class="time-btn">5 часов</button>
+                    <button onclick="loadChartData('1d')" class="time-btn">1 день</button>
+                    <button onclick="loadChartData('1w')" class="time-btn">1 неделя</button>
+                </div>
+
+                <!-- Контейнер для графика -->
+                <canvas id="historyChart"></canvas>
+
+                <!-- Кнопка закрытия -->
+                <div class="modal-buttons">
+                    <button onclick="closeChartModal()" class="button button-danger">Закрыть</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Подключите Chart.js в самом конце перед закрывающим тегом body -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <!-- Уведомления -->
         <div id="notification"></div>
     </div>
